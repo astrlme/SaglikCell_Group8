@@ -32,6 +32,7 @@ frontend/*.tsbuildinfo
 
 backend/src/**/bin/
 backend/src/**/obj/
+obj
 
 *.user
 *.suo
