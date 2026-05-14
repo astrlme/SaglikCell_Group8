@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SaglikCell.Api/SaglikCell.Api.csproj" />
+  <Project Path="SaglikCell.Application/SaglikCell.Application.csproj" />
+  <Project Path="SaglikCell.Domain/SaglikCell.Domain.csproj" />
+  <Project Path="SaglikCell.Infrastructure/SaglikCell.Infrastructure.csproj" />
+</Solution>
