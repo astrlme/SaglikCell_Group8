@@ -15,4 +15,5 @@ public class User : BaseEntity
     public ICollection<Goal> Goals { get; set; } = new List<Goal>();
     public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+    public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }

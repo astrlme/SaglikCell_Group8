@@ -11,10 +11,8 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      # Init scripts run in alphabetical order on first container start
-      # (only when the data volume is empty).
-      - ./backend/SaglikCell.Infrastructure/sql/schema:/docker-entrypoint-initdb.d/01-schema:ro
-      - ./backend/SaglikCell.Infrastructure/sql/seed:/docker-entrypoint-initdb.d/02-seed:ro
+      - ./backend/SaglikCell.Infrastructure/sql:/sql:ro
+      - ./backend/SaglikCell.Infrastructure/sql/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-saglikcell} -d ${POSTGRES_DB:-saglikcell}"]
       interval: 10s
@@ -23,12 +21,35 @@ services:
     networks:
       - saglikcell-net
 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: saglikcell-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-5080}:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-saglikcell};Username=${POSTGRES_USER:-saglikcell};Password=${POSTGRES_PASSWORD:-saglikcell}"
+      Jwt__Key: ${JWT_KEY:-super-secret-key-for-saglikcell-demo-please-change-me-32chars}
+      Jwt__Issuer: ${JWT_ISSUER:-SaglikCell}
+      Jwt__Audience: ${JWT_AUDIENCE:-SaglikCellUsers}
+      Jwt__AccessTokenMinutes: ${JWT_ACCESS_TOKEN_MINUTES:-60}
+      Jwt__RefreshTokenDays: ${JWT_REFRESH_TOKEN_DAYS:-7}
+      Cors__AllowedOrigins__0: ${CORS_ORIGIN:-http://localhost:5173}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - saglikcell-net
+
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: saglikcell-pgadmin
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@saglikcell.local}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@test.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: "False"
     ports:

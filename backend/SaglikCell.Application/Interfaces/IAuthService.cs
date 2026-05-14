@@ -4,7 +4,9 @@ namespace SaglikCell.Application.Interfaces;
 
 public interface IAuthService
 {
-    Task<ApiResponse<string>> RegisterAsync(RegisterRequest request);
-    Task<ApiResponse<string>> LoginAsync(LoginRequest request);
-    Task<ApiResponse<bool>> VerifyGsmAsync(string gsm, string code);
+    Task<ApiResponse<RegisterResponse>> RegisterAsync(RegisterRequest request);
+    Task<ApiResponse<AuthResponse>> LoginAsync(LoginRequest request);
+    Task<ApiResponse<bool>> VerifyGsmAsync(VerifyOtpRequest request);
+    Task<ApiResponse<AuthResponse>> RefreshTokenAsync(string refreshToken);
+    Task<ApiResponse<bool>> LogoutAsync(string refreshToken);
 }

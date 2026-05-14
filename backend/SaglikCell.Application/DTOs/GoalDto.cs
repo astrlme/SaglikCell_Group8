@@ -27,3 +27,9 @@ public class GoalResponse
     public GoalStatus Status { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }
+
+public class UpdateGoalStatusRequest
+{
+    [Required(ErrorMessage = "Hedef durumu zorunludur.")]
+    public GoalStatus Status { get; set; }
+}

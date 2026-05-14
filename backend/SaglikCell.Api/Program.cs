@@ -1,34 +1,47 @@
-using SaglikCell.Api.Data;
+using DotNetEnv;
+using SaglikCell.Api.Auth;
+using SaglikCell.Api.Extensions;
+using SaglikCell.Api.Middleware;
+using SaglikCell.Application;
+using SaglikCell.Application.Interfaces;
+using SaglikCell.Infrastructure;
+
+// ── Bootstrap ───────────────────────────────────────────────────────────────────
+// Load .env from the nearest parent directory (repo root) so env vars are
+// available before configuration is built.  ASP.NET Core's
+// AddEnvironmentVariables() will then surface them as overrides for
+// appsettings.json (Jwt__Key, ConnectionStrings__*, …).
+Env.TraversePath().Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddEnvironmentVariables();
+
+// ── DI – Application & Infrastructure layers ────────────────────────────────────
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
+
+// ── DI – API layer ──────────────────────────────────────────────────────────────
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 builder.Services.AddControllers();
 
-builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddSingleton<DbConnectionFactory>();
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
+builder.Services.AddSaglikCellAuthentication(builder.Configuration);
+builder.Services.AddSaglikCellSwagger();
+builder.Services.AddSaglikCellCors(builder.Configuration);
 
 var app = builder.Build();
 
-app.UseSwagger();
+// ── Middleware pipeline ─────────────────────────────────────────────────────────
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-app.UseSwaggerUI();
+// API docs – Swagger JSON + Scalar UI (all environments)
+app.MapSaglikCellApiDocs();
 
-app.UseCors("AllowFrontend");
+app.UseCors(CorsExtensions.PolicyName);
 
-app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
