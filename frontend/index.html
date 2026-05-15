@@ -1,12 +1,61 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="tr">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>SağlıkCell - Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#00619e",
+              "secondary-container": "#ffc310",
+              "on-secondary-container": "#6e5200",
+              "surface-container-lowest": "#ffffff",
+              "background": "#f8f9ff",
+              "on-surface": "#181c20",
+              "on-surface-variant": "#404750",
+              "surface-variant": "#e0e2e9",
+              "outline-variant": "#c0c7d2",
+              "primary-fixed": "#d0e4ff",
+              "tertiary-fixed": "#dfe0ff",
+              "primary-container": "#217abf",
+              "on-primary": "#ffffff"
+            },
+            spacing: {
+              "stack-md": "16px",
+              "stack-sm": "8px",
+              "stack-lg": "32px",
+              "gutter": "24px",
+              "base": "8px",
+              "container-padding-mobile": "20px",
+              "container-padding-desktop": "40px"
+            }
+          }
+        }
+      }
+    </script>
+    <style type="text/css">
+      /* Tailwind'in fontları tanıması için ekleme */
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      h1, h2, h3 {
+        font-family: 'Manrope', sans-serif;
+      }
+    </style>
   </head>
-  <body>
+  <body class="bg-background">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
