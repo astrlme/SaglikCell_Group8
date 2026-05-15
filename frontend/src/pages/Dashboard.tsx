@@ -1,155 +1,217 @@
-﻿import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import AddMetricModal from '../components/AddMetricModal';
+﻿import {
+  Activity,
+  Droplet,
+  Flame,
+  Footprints,
+  Heart,
+  Moon,
+  Plus,
+  Scale,
+  TrendingUp,
+} from "lucide-react";
 
-const Dashboard: React.FC = () => {
-  const [dailyData, setDailyData] = useState<any>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+import Navbar from "../components/Navbar";
+import Sidebar from "../components/Sidebar";
+import BottomNavbar from "../components/BottomNavbar";
 
-  const fetchDailyData = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/v1/metrics/daily/6bb020f4-7627-4416-b6d7-13b4a8ad9a7d');
-      setDailyData(response.data);
-    } catch (error) {
-      console.error('Daily data could not be loaded:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchDailyData();
-  }, []);
-
+export default function Dashboard() {
   const metrics = [
     {
-      name: 'Steps',
-      current: dailyData?.steps?.toLocaleString() || '0',
-      target: '10,000',
-      unit: 'steps',
-      progress: Math.min(((dailyData?.steps || 0) / 10000) * 100, 100),
-      status: (dailyData?.steps >= 10000) ? 'Complete' : 'Behind',
-      icon: 'directions_walk',
+      title: "Adım Sayısı",
+      value: "8.450",
+      target: "10.000 adım",
+      percent: 84,
+      status: "Hedefe Yakın",
+      icon: Footprints,
     },
     {
-      name: 'Water Intake',
-      current: dailyData?.water?.toLocaleString() || '0',
-      target: '2,500',
-      unit: 'ml',
-      progress: Math.min(((dailyData?.water || 0) / 2500) * 100, 100),
-      status: 'Normal',
-      icon: 'water_drop',
+      title: "Su Tüketimi",
+      value: "1.750",
+      target: "2.500 ml",
+      percent: 70,
+      status: "Normal",
+      icon: Droplet,
     },
     {
-      name: 'Sleep',
-      current: dailyData?.sleep || '0',
-      target: '8',
-      unit: 'hours',
-      progress: Math.min(((dailyData?.sleep || 0) / 8) * 100, 100),
-      status: 'Good',
-      icon: 'bedtime',
+      title: "Uyku",
+      value: "7.2",
+      target: "8 saat",
+      percent: 90,
+      status: "İyi",
+      icon: Moon,
     },
     {
-      name: 'Weight',
-      current: dailyData?.weight || '0',
-      target: '',
-      unit: 'kg',
-      progress: 100,
-      status: 'Stable',
-      icon: 'monitor_weight',
+      title: "Kilo",
+      value: "74",
+      target: "kg",
+      percent: 100,
+      status: "Stabil",
+      icon: Scale,
     },
     {
-      name: 'Heart Rate',
-      current: dailyData?.heartRate || '0',
-      target: '',
-      unit: 'bpm',
-      progress: 100,
-      status: 'Normal',
-      icon: 'favorite',
+      title: "Kalp Atışı",
+      value: "78",
+      target: "bpm",
+      percent: 78,
+      status: "Normal",
+      icon: Heart,
     },
     {
-      name: 'Calories',
-      current: dailyData?.calories?.toLocaleString() || '0',
-      target: '2,000',
-      unit: 'kcal',
-      progress: Math.min(((dailyData?.calories || 0) / 2000) * 100, 100),
-      status: 'Normal',
-      icon: 'local_fire_department',
+      title: "Kalori",
+      value: "1.950",
+      target: "2.200 kcal",
+      percent: 88,
+      status: "Normal",
+      icon: Flame,
     },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-container-padding-mobile md:px-container-padding-desktop pt-stack-md pb-stack-lg">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-gutter gap-stack-md">
-        <div>
-          <h1 className="text-headline-lg text-on-surface mb-stack-sm">Welcome back! Here's your health overview.</h1>
-          <p className="text-on-surface-variant">Your progress looks good. Keep going!</p>
-        </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-primary text-on-primary px-6 py-3 rounded-lg text-sm font-semibold shadow-lg flex items-center gap-2 hover:opacity-90 transition-opacity"
-        >
-          <span className="material-symbols-outlined">add</span>
-          Quick Entry
-        </button>
-      </header>
+    <div className="flex min-h-screen bg-[#EAF6FF]">
+      <Sidebar />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-        <div className="col-span-1 lg:col-span-4 bg-surface-container-lowest rounded-xl shadow-sm p-stack-md flex flex-col items-center justify-center relative overflow-hidden border border-surface-variant">
-          <h2 className="text-title-lg text-on-surface mb-stack-lg">Health Score</h2>
-          <div className="relative w-48 h-48 flex items-center justify-center z-10 mb-stack-md">
-            <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-              <circle className="text-surface-container-highest" cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="8" />
-              <circle
-                className="text-primary transition-all duration-1000"
-                cx="50"
-                cy="50"
-                r="45"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="8"
-                strokeDasharray="282.7"
-                strokeDashoffset={282.7 - (282.7 * 82) / 100}
-              />
-            </svg>
-            <div className="text-center">
-              <span className="text-display-lg text-primary block">82</span>
-              <span className="text-xs text-on-surface-variant">/ 100</span>
-            </div>
-          </div>
-          <div className="bg-primary/10 text-primary px-4 py-1 rounded-full text-xs font-bold z-10 flex items-center gap-2">
-            <span className="material-symbols-outlined text-sm">trending_up</span>
-            +5 from last week
-          </div>
-        </div>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <Navbar />
 
-        <div className="col-span-1 lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-stack-md">
-          {metrics.map((metric, index) => (
-            <div key={index} className="bg-surface-container-lowest rounded-xl shadow-sm p-stack-md border border-surface-variant flex flex-col">
-              <div className="flex justify-between items-start mb-stack-sm">
-                <div className="h-10 w-10 rounded-lg flex items-center justify-center bg-primary/10 text-primary">
-                  <span className="material-symbols-outlined">{metric.icon}</span>
+        <main className="flex-1 p-6 pb-24 lg:p-8">
+          <section className="rounded-[28px] bg-gradient-to-r from-[#217ABF] to-[#011062] p-8 text-white shadow-xl">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FEC20D] text-[#011062]">
+                  <Activity size={34} />
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-outline">{metric.status}</span>
+
+                <h1 className="text-5xl font-extrabold text-white">
+                  Merhaba Arif 👋
+                </h1>
+
+                <p className="mt-4 max-w-2xl text-lg leading-relaxed text-white">
+                  Bugünkü sağlık durumunu, hedef ilerlemeni ve günlük
+                  metriklerini buradan takip et.
+                </p>
               </div>
-              <h3 className="text-sm text-on-surface-variant mb-1">{metric.name}</h3>
-              <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-xl font-bold text-on-surface">{metric.current}</span>
-                <span className="text-xs text-outline">{metric.target ? `/ ${metric.target} ${metric.unit}` : metric.unit}</span>
-              </div>
-              <div className="w-full bg-surface-variant rounded-full h-1.5 mt-auto">
-                <div className="bg-primary h-1.5 rounded-full transition-all duration-500" style={{ width: `${metric.progress}%` }} />
+
+              <div className="rounded-3xl bg-white/20 px-10 py-7 text-center backdrop-blur-md">
+                <p className="text-sm font-medium text-white">Sağlık Skoru</p>
+
+                <p className="mt-3 text-5xl font-extrabold text-[#FEC20D]">
+                  82
+                </p>
+
+                <p className="mt-2 text-sm text-white">/ 100</p>
+
+                <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white">
+                  <TrendingUp size={16} />
+                  +5 geçen haftaya göre
+                </div>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
+          </section>
 
-      <AddMetricModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSuccess={() => fetchDailyData()}
-      />
+          <section className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {metrics.map((metric) => {
+              const Icon = metric.icon;
+
+              return (
+                <div
+                  key={metric.title}
+                  className="rounded-[28px] bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                >
+                  <div className="mb-5 flex items-start justify-between">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF6FF] text-[#217ABF]">
+                      <Icon size={24} />
+                    </div>
+
+                    <span className="rounded-full bg-[#FEC20D]/25 px-3 py-1 text-xs font-bold text-[#011062]">
+                      {metric.status}
+                    </span>
+                  </div>
+
+                  <p className="text-sm text-gray-500">{metric.title}</p>
+
+                  <div className="mt-2 flex items-end gap-2">
+                    <h3 className="text-3xl font-bold text-[#011062]">
+                      {metric.value}
+                    </h3>
+
+                    <span className="mb-1 text-sm text-gray-500">
+                      / {metric.target}
+                    </span>
+                  </div>
+
+                  <div className="mt-5 h-3 overflow-hidden rounded-full bg-[#F5F7FA]">
+                    <div
+                      className="h-full rounded-full bg-[#217ABF]"
+                      style={{ width: `${metric.percent}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </section>
+
+          <section className="mt-8 grid gap-6 xl:grid-cols-3">
+            <div className="rounded-[28px] bg-white p-6 shadow-sm xl:col-span-2">
+              <div className="mb-5 flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-[#011062]">
+                    Günlük Hedef İlerlemesi
+                  </h2>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Hedeflerine ulaşmak için harika gidiyorsun.
+                  </p>
+                </div>
+
+                <button className="hidden rounded-xl bg-[#217ABF] px-4 py-3 font-semibold text-white hover:bg-[#011062] md:flex md:items-center md:gap-2">
+                  <Plus size={18} />
+                  Hızlı Giriş
+                </button>
+              </div>
+
+              <div className="rounded-3xl bg-[#F5F7FA] p-6">
+                <div className="mb-3 flex justify-between">
+                  <span className="font-semibold text-[#011062]">
+                    Günlük Adım Hedefi
+                  </span>
+                  <span className="font-bold text-[#217ABF]">
+                    3 gün streak 🔥
+                  </span>
+                </div>
+
+                <div className="h-4 overflow-hidden rounded-full bg-white">
+                  <div className="h-full w-[84%] rounded-full bg-[#FEC20D]" />
+                </div>
+
+                <p className="mt-3 text-sm text-gray-500">
+                  Hedefinin %84’ünü tamamladın. 1.550 adım kaldı.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-[28px] border-2 border-[#FEC20D] bg-white p-6 shadow-sm">
+              <h2 className="text-xl font-bold text-[#011062]">
+                Son Bildirimler
+              </h2>
+
+              <div className="mt-5 space-y-3">
+                <div className="rounded-2xl bg-[#EAF6FF] p-4 text-sm text-[#011062]">
+                  Su hedefinin %70’ine ulaştın.
+                </div>
+
+                <div className="rounded-2xl bg-[#FEC20D]/25 p-4 text-sm text-[#011062]">
+                  Bugünkü uyku verin normal aralıkta.
+                </div>
+
+                <div className="rounded-2xl bg-green-100 p-4 text-sm text-green-700">
+                  Harika gidiyorsun! Adım hedefin çok yakın.
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <BottomNavbar />
+      </div>
     </div>
   );
-};
-
-export default Dashboard;
+}
