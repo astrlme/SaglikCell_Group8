@@ -21,7 +21,9 @@ export default function Settings() {
         <Navbar />
 
         <main className="flex-1 p-6 pb-24 lg:p-8">
-          <section className="rounded-[28px] bg-gradient-to-r from-[#217ABF] to-[#011062] p-8 text-white shadow-xl">
+          <section
+            className="rounded-[28px] p-8 text-white shadow-xl"
+            style={{ background: 'linear-gradient(to right, #217ABF, #011062)' }}>
             <div className="flex items-center gap-5">
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FEC20D] text-[#011062]">
                 <SettingsIcon size={34} />

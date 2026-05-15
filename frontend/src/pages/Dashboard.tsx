@@ -1,4 +1,5 @@
-﻿import {
+import { useState, useEffect } from "react";
+import {
   Activity,
   Droplet,
   Flame,
@@ -13,12 +14,64 @@
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import BottomNavbar from "../components/BottomNavbar";
+import { MetricService, type MetricResponse } from "../services/MetricService";
+import { ProfileService, type ProfileResponse } from "../services/ProfileService";
+import { GoalService, type GoalResponse } from "../services/GoalService";
 
 export default function Dashboard() {
+  const [apiMetrics, setApiMetrics] = useState<MetricResponse[]>([]);
+  const [profile, setProfile] = useState<ProfileResponse | null>(null);
+  const [goals, setGoals] = useState<GoalResponse[]>([]);
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        let data = await MetricService.getMetrics();
+        
+        // Demo amaçlı: Eğer kullanıcının hiç verisi yoksa, backend'e örnek veriler ekleyelim
+        if (data.length === 0) {
+          const today = new Date().toISOString().split('T')[0];
+          await Promise.all([
+            MetricService.addMetric({ type: 0, value: 8450, date: today }),
+            MetricService.addMetric({ type: 1, value: 1750, date: today }),
+            MetricService.addMetric({ type: 2, value: 7.2, date: today }),
+            MetricService.addMetric({ type: 3, value: 74, date: today }),
+            MetricService.addMetric({ type: 4, value: 78, date: today }),
+            MetricService.addMetric({ type: 5, value: 1950, date: today })
+          ]);
+          data = await MetricService.getMetrics();
+        }
+        
+        setApiMetrics(data);
+      } catch (error) {
+        console.error("Error fetching metrics", error);
+      }
+
+      try {
+        const profileData = await ProfileService.getProfile();
+        setProfile(profileData);
+      } catch (e) {
+        console.error("Error fetching profile", e);
+      }
+
+      try {
+        const goalsData = await GoalService.getGoals();
+        setGoals(goalsData);
+      } catch (e) {
+        console.error("Error fetching goals", e);
+      }
+    };
+    fetchMetrics();
+  }, []);
+
+  const getMetricValue = (type: number, fallback: string) => {
+    const metric = apiMetrics.find((m) => m.type === type);
+    return metric ? metric.value.toString() : fallback;
+  };
   const metrics = [
     {
       title: "Adım Sayısı",
-      value: "8.450",
+      value: getMetricValue(0, "0"), // 0: STEPS
       target: "10.000 adım",
       percent: 84,
       status: "Hedefe Yakın",
@@ -26,7 +79,7 @@ export default function Dashboard() {
     },
     {
       title: "Su Tüketimi",
-      value: "1.750",
+      value: getMetricValue(1, "0"), // 1: WATER
       target: "2.500 ml",
       percent: 70,
       status: "Normal",
@@ -34,7 +87,7 @@ export default function Dashboard() {
     },
     {
       title: "Uyku",
-      value: "7.2",
+      value: getMetricValue(2, "0"), // 2: SLEEP
       target: "8 saat",
       percent: 90,
       status: "İyi",
@@ -42,7 +95,7 @@ export default function Dashboard() {
     },
     {
       title: "Kilo",
-      value: "74",
+      value: getMetricValue(3, "0"), // 3: WEIGHT
       target: "kg",
       percent: 100,
       status: "Stabil",
@@ -50,7 +103,7 @@ export default function Dashboard() {
     },
     {
       title: "Kalp Atışı",
-      value: "78",
+      value: getMetricValue(4, "0"), // 4: HEART_RATE
       target: "bpm",
       percent: 78,
       status: "Normal",
@@ -58,7 +111,7 @@ export default function Dashboard() {
     },
     {
       title: "Kalori",
-      value: "1.950",
+      value: getMetricValue(5, "0"), // 5: CALORIES
       target: "2.200 kcal",
       percent: 88,
       status: "Normal",
@@ -74,7 +127,10 @@ export default function Dashboard() {
         <Navbar />
 
         <main className="flex-1 p-6 pb-24 lg:p-8">
-          <section className="rounded-[28px] bg-gradient-to-r from-[#217ABF] to-[#011062] p-8 text-white shadow-xl">
+          <section 
+            className="rounded-[28px] p-8 text-white shadow-xl"
+            style={{ background: 'linear-gradient(to right, #217ABF, #011062)' }}
+          >
             <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FEC20D] text-[#011062]">
@@ -82,7 +138,7 @@ export default function Dashboard() {
                 </div>
 
                 <h1 className="text-5xl font-extrabold text-white">
-                  Merhaba Arif 👋
+                  Merhaba {profile?.fullName?.split(" ")[0] || "Kullanıcı"} 👋
                 </h1>
 
                 <p className="mt-4 max-w-2xl text-lg leading-relaxed text-white">
@@ -168,24 +224,56 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              <div className="rounded-3xl bg-[#F5F7FA] p-6">
-                <div className="mb-3 flex justify-between">
-                  <span className="font-semibold text-[#011062]">
-                    Günlük Adım Hedefi
-                  </span>
-                  <span className="font-bold text-[#217ABF]">
-                    3 gün streak 🔥
-                  </span>
-                </div>
+              {goals.length > 0 ? (
+                goals.slice(0, 2).map((goal) => {
+                  const metricNames = ["Adım", "Su", "Uyku", "Kilo", "Kalp Atışı", "Kalori"];
+                  const metricName = metricNames[goal.metricType] || "Metrik";
+                  const currentValueStr = getMetricValue(goal.metricType, "0");
+                  const currentValue = parseFloat(currentValueStr.replace(/\./g, ''));
+                  const percent = Math.min(100, Math.round((currentValue / goal.targetValue) * 100)) || 0;
+                  const remaining = Math.max(0, goal.targetValue - currentValue);
 
-                <div className="h-4 overflow-hidden rounded-full bg-white">
-                  <div className="h-full w-[84%] rounded-full bg-[#FEC20D]" />
-                </div>
+                  return (
+                    <div key={goal.id} className="rounded-3xl bg-[#F5F7FA] p-6 mb-4">
+                      <div className="mb-3 flex justify-between">
+                        <span className="font-semibold text-[#011062]">
+                          Günlük {metricName} Hedefi
+                        </span>
+                        <span className="font-bold text-[#217ABF]">
+                          {goal.currentStreak} gün streak 🔥
+                        </span>
+                      </div>
 
-                <p className="mt-3 text-sm text-gray-500">
-                  Hedefinin %84’ünü tamamladın. 1.550 adım kaldı.
-                </p>
-              </div>
+                      <div className="h-4 overflow-hidden rounded-full bg-white">
+                        <div className="h-full rounded-full bg-[#FEC20D]" style={{ width: `${percent}%` }} />
+                      </div>
+
+                      <p className="mt-3 text-sm text-gray-500">
+                        Hedefinin %{percent}’ini tamamladın. {remaining} {metricName.toLowerCase()} kaldı.
+                      </p>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="rounded-3xl bg-[#F5F7FA] p-6">
+                  <div className="mb-3 flex justify-between">
+                    <span className="font-semibold text-[#011062]">
+                      Günlük Adım Hedefi
+                    </span>
+                    <span className="font-bold text-[#217ABF]">
+                      0 gün streak 🔥
+                    </span>
+                  </div>
+
+                  <div className="h-4 overflow-hidden rounded-full bg-white">
+                    <div className="h-full w-[84%] rounded-full bg-[#FEC20D]" />
+                  </div>
+
+                  <p className="mt-3 text-sm text-gray-500">
+                    Henüz aktif bir hedefiniz bulunmuyor. Yeni hedefler belirleyin!
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="rounded-[28px] border-2 border-[#FEC20D] bg-white p-6 shadow-sm">

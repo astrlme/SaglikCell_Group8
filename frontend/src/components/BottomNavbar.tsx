@@ -23,7 +23,7 @@ export default function BottomNavbar() {
         Hedef
       </NavLink>
 
-      <NavLink to="/profile" className="flex flex-col items-center text-xs text-gray-600">
+      <NavLink to="/settings" className="flex flex-col items-center text-xs text-gray-600">
         <User size={20} />
         Profil
       </NavLink>

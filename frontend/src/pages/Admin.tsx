@@ -45,7 +45,9 @@ export default function Admin() {
 
         <main className="flex-1 p-6 pb-24 lg:p-8">
           {/* HERO */}
-          <section className="rounded-[28px] bg-gradient-to-r from-[#217ABF] to-[#011062] p-8 text-white shadow-xl">
+          <section
+            className="rounded-[28px] p-8 text-white shadow-xl"
+            style={{ background: 'linear-gradient(to right, #217ABF, #011062)' }}>
             <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FEC20D] text-[#011062]">
@@ -151,11 +153,10 @@ export default function Admin() {
 
                         <td className="px-5 py-4">
                           <span
-                            className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                              user.status === "Aktif"
-                                ? "bg-green-100 text-green-700"
-                                : "bg-red-100 text-red-700"
-                            }`}
+                            className={`rounded-full px-3 py-1 text-xs font-semibold ${user.status === "Aktif"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
+                              }`}
                           >
                             {user.status}
                           </span>

@@ -7,7 +7,9 @@ import {
   Bell,
   Settings,
   ShieldCheck,
+  LogOut,
 } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
 
 const links = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -20,8 +22,10 @@ const links = [
 ];
 
 export default function Sidebar() {
+  const { logout } = useAuth();
+
   return (
-    <aside className="hidden min-h-screen w-64 bg-[#011062] p-4 text-white lg:block">
+    <aside className="hidden min-h-screen w-64 relative bg-[#011062] p-4 text-white lg:block">
       <div className="mb-8 rounded-2xl bg-white/10 p-4">
         <h1 className="text-2xl font-bold text-[#FEC20D]">SağlıkCell</h1>
         <p className="mt-1 text-xs text-white/70">Sağlıklı kod, sağlıklı yaşam</p>
@@ -49,6 +53,16 @@ export default function Sidebar() {
           );
         })}
       </nav>
+
+      <div className="absolute bottom-4 left-4 w-[calc(16rem-2rem)]">
+        <button
+          onClick={logout}
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm text-red-300 transition hover:bg-red-500/20 hover:text-red-200"
+        >
+          <LogOut size={18} />
+          Çıkış Yap
+        </button>
+      </div>
     </aside>
   );
 }

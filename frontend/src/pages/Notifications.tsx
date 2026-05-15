@@ -52,7 +52,8 @@ export default function Notifications() {
         <Navbar />
 
         <main className="flex-1 p-6 pb-24 lg:p-8">
-          <section className="rounded-[28px] bg-gradient-to-r from-[#217ABF] to-[#011062] p-8 text-white shadow-xl">
+          <section className="rounded-[28px] p-8 text-white shadow-xl"
+            style={{ background: 'linear-gradient(to right, #217ABF, #011062)' }}>
             <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FEC20D] text-[#011062]">
@@ -103,13 +104,12 @@ export default function Notifications() {
                       className="flex gap-4 rounded-3xl border border-gray-100 bg-[#F5F7FA] p-5"
                     >
                       <div
-                        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
-                          item.type === "success"
+                        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${item.type === "success"
                             ? "bg-green-100 text-green-700"
                             : item.type === "warning"
-                            ? "bg-[#FEC20D]/30 text-[#011062]"
-                            : "bg-[#EAF6FF] text-[#217ABF]"
-                        }`}
+                              ? "bg-[#FEC20D]/30 text-[#011062]"
+                              : "bg-[#EAF6FF] text-[#217ABF]"
+                          }`}
                       >
                         <Icon size={24} />
                       </div>

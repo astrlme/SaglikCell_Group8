@@ -26,7 +26,9 @@ export default function Premium() {
         <Navbar />
 
         <main className="flex-1 p-6 pb-24 lg:pb-6">
-          <section className="rounded-3xl bg-gradient-to-r from-[#217ABF] to-[#011062] p-8 text-white shadow-lg">
+          <section
+            className="rounded-[28px] p-8 text-white shadow-xl"
+            style={{ background: 'linear-gradient(to right, #217ABF, #011062)' }}>
             <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FEC20D] text-[#011062]">

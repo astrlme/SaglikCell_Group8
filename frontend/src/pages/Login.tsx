@@ -1,18 +1,29 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { AuthService } from "../services/AuthService";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [gsm, setGsm] = useState("");
   const [otp, setOtp] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Demo OTP kontrolü veya doğrudan yönlendirme
-    if (otp === "1234" || otp.length === 4) {
+    setIsLoading(true);
+    
+    // Call the backend API for login
+    const response = await AuthService.login(gsm, otp);
+
+    setIsLoading(false);
+
+    if (response.success && response.accessToken && response.refreshToken) {
+      login(response.accessToken, response.refreshToken);
       navigate("/dashboard");
     } else {
-      alert("Lütfen geçerli bir kod girin (Demo: 1234)");
+      alert(response.message || "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.");
     }
   };
 
@@ -65,10 +76,10 @@ export default function Login() {
                 </div>
               </div>
 
-              {/* OTP Input */}
+              {/* Password Input */}
               <div>
                 <label className="block text-label-md font-label-md text-on-surface-variant mb-base" htmlFor="otp-input">
-                  Doğrulama Kodu
+                  Şifre
                 </label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-on-surface-variant material-symbols-outlined pointer-events-none select-none">
@@ -77,15 +88,15 @@ export default function Login() {
                   <input
                     className="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-lg font-body-lg text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all tracking-widest placeholder:text-outline"
                     id="otp-input"
-                    maxLength={4}
-                    placeholder="XXXX"
-                    type="text"
+                    placeholder="En az 6 karakter"
+                    type="password"
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     required
+                    minLength={6}
                   />
                 </div>
-                <p className="text-label-md font-label-md text-outline mt-base">Demo OTP: 1234</p>
+                <p className="text-label-md font-label-md text-outline mt-base">Demo Şifre: 123456</p>
               </div>
 
               {/* Submit Button */}
@@ -98,6 +109,13 @@ export default function Login() {
                   arrow_forward
                 </span>
               </button>
+
+              <div className="text-center mt-4">
+                <span className="text-body-md text-on-surface-variant">Hesabınız yok mu? </span>
+                <Link to="/signup" className="text-primary font-semibold hover:underline">
+                  Kayıt Ol
+                </Link>
+              </div>
             </form>
           </div>
 
