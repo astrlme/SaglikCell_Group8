@@ -7,6 +7,8 @@ import Premium from "./pages/Premium";
 import Subscription from "./pages/Subscription";
 import Goals from "./pages/Goals";
 import Admin from "./pages/Admin";
+import Settings from "./pages/Settings";
+import Notifications from "./pages/Notifications";
 
 export default function App() {
   return (
@@ -19,6 +21,8 @@ export default function App() {
       <Route path="/subscription" element={<Subscription />} />
       <Route path="/goals" element={<Goals />} />
       <Route path="/admin" element={<Admin />} />
+      <Route path="/settings" element={<Settings />} />
+      <Route path="/notifications" element={<Notifications />} />
     </Routes>
   );
 }
